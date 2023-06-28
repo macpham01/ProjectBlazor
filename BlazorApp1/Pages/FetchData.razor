@@ -1,0 +1,58 @@
+﻿@page "/fetchdata"
+
+<PageTitle>Weather forecast</PageTitle>
+
+@using BlazorApp1.Data
+@using BlazorApp1.DI
+@using BlazorApp1.Models
+@inject IStudentService studentService
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from a service.</p>
+
+@if (listStudent == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Họ tên</th>
+                <th>Giới tính</th>
+                <th>Điểm toán</th>
+                <th>Điểm văn</th>
+                <th>Điểm anh</th>
+                <th>Điểm trung bình</th>
+                <th>Học lực</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var student in listStudent)
+            {
+                <tr>
+                    <td>@student.STT</td>
+                    <td>@student.FullName</td>
+                    <td>@student.Gender</td>
+                    <td>@student.MathScore</td>
+                    <td>@student.LiteratureScore</td>
+                    <td>@student.EnglishScore</td>
+                    <td>@student.AvgScore</td>
+                    <td>@student.HocLuc</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<SinhVien> listStudent = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        listStudent = await studentService.GetStudentsByPageAsyn(1, 10);
+    }
+}

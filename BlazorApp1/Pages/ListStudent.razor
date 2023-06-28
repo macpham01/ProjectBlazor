@@ -1,0 +1,138 @@
+﻿@page "/liststudent"
+@inject IMessageService _message
+@using System.ComponentModel
+@using AntDesign.TableModels
+@using BlazorApp1.Models;
+
+
+<Button Type="primary" OnClick="@(()=>AddStudent())">
+    Thêm mới sinh viên
+</Button>
+
+<Modal style="width:50%; height: 80vh" Title="@_titleModel"
+       Visible="@_visible"
+       >
+     @*<Template style="height:90%; width:100%">
+            <Row Gutter="16">
+                <AntDesign.Col Span="12">
+                    <Text>Họ và tên</Text>
+                <Input AutoFocus="true" Placeholder="Họ và tên" TValue="string" @bind-Value="student.FullName"></Input>
+                </AntDesign.Col>
+                <AntDesign.Col Span="12">
+                     <Row Gutter="12">
+                    <Text>Giới tính</Text>
+                    </Row>
+                    <RadioGroup @bind-Value="student.Gender">
+                        <Radio Value="0">Nam</Radio>
+                        <Radio Value="1">Nữ</Radio>
+                        <Radio Value="2">Khác</Radio>
+                    </RadioGroup>
+                </AntDesign.Col>
+            </Row>
+            <br />
+            <Row Gutter="16">
+                <AntDesign.Col Span="12">
+                    <Text>Điểm toán</Text>
+                <Input Placeholder="Nhập điểm toán" TValue="string" @bind-Value="student.MathScore" />
+                </AntDesign.Col>
+                <AntDesign.Col Span="12">
+                    <Text>Điểm văn</Text>
+                <Input Placeholder="Nhập điểm văn" TValue="string" @bind-Value="student.LiteratureScore" />
+                </AntDesign.Col>
+            </Row>
+            <br />
+
+        <Row Gutter="16">
+            <AntDesign.Col Span="12">
+                <Text>Điểm anh</Text>
+                    <Input Placeholder="Nhập điểm anh" TValue="string" @bind-Value="student.EnglishScore" />
+            </AntDesign.Col>
+        </Row>
+        <br />
+     </Template>*@
+
+    @using System.ComponentModel.DataAnnotations;
+    @using System.Text.Json;
+
+    <Form Model="@student"
+          @ref="form"
+          LabelColSpan="8"
+          WrapperColSpan="16">
+        <FormItem Label="Họ và tên">
+            <Input @bind-Value="student.FullName" />
+        </FormItem>
+        <FormItem Label="Giới tính">
+            <RadioGroup @bind-Value="student.Gender">
+                <Radio Value="0">Nam</Radio>
+                <Radio Value="1">Nữ</Radio>
+                <Radio Value="2">Khác</Radio>
+            </RadioGroup>
+        </FormItem>
+        <FormItem Label="Điểm toán">
+            <Input @bind-Value="student.MathScore" />
+        </FormItem>
+         <FormItem Label="Điểm văn">
+            <Input @bind-Value="student.LiteratureScore" />
+        </FormItem>
+        <FormItem Label="Điểm anh">
+            <Input @bind-Value="@context.EnglishScore" />
+        </FormItem>
+        <FormItem WrapperColOffset="8" WrapperColSpan="16">
+            <Button Type="@ButtonType.Primary" HtmlType="submit" OnClick="(e)=>HandleOk(e)">
+                Submit
+            </Button>
+            <Button OnClick="(e)=>HandleCancel(e)">
+                Cancel
+            </Button>
+        </FormItem>
+    </Form>
+</Modal>
+
+
+
+<div class="mt-2"></div>
+<Table @ref="table"
+       TItem="SinhVien"
+       DataSource="@listStudent"
+       Total="_total"
+       @bind-PageIndex="_pageIndex"
+       @bind-PageSize="_pageSize"
+       @bind-SelectedRows="selectedRows"
+       OnChange="OnChange"
+       Size="TableSize.Small">
+    <Selection Key="@(context.GuiID.ToString())" />
+    <PropertyColumn Property="c=>c.STT" Sortable />
+    <PropertyColumn Title="Họ và tên" Property="c=>c.FullName" Sortable />
+    <PropertyColumn Title="Giới tính" Property="c=>GetGenderLabel(c.Gender)"  />
+    <PropertyColumn Title="Điểm toán" Property="c=>c.MathScore" />
+    <PropertyColumn Title="Điểm Văn" Property="c=>c.LiteratureScore" />
+    <PropertyColumn Title="Điểm Anh" Property="c=>c.EnglishScore" />
+    <PropertyColumn Title="Điểm trung bình" Property="c=>c.AvgScore" Sortable />
+    <PropertyColumn Title="Học lực" Property="c=>c.HocLuc" />
+    <ActionColumn Title="Hành động">
+        <Space>
+            <SpaceItem><Button Type="@ButtonType.Primary" OnClick="()=>UpdateStudent(context.GuiID)">Cập nhật</Button></SpaceItem>
+            @*<SpaceItem><Button Danger OnClick="()=>{_visibleDialog=true; _idStudent = context.GuiID;}">Xoá</Button></SpaceItem>*@
+            <SpaceItem>
+                <Popconfirm Title="@_modalText"
+                            OnConfirm="()=>Delete(context.GuiID)">
+                    <Button Danger>Delete</Button>
+                </Popconfirm>
+            </SpaceItem>
+        </Space>
+    </ActionColumn>
+</Table>
+
+                <br />
+                <p>PageIndex: @_pageIndex | PageSize: @_pageSize | Total: @_total</p>
+
+<Modal Title="Xoá sinh viên?"
+       Visible="@_visibleDialog"
+       OnOk="()=>Delete(_idStudent)"
+       OkType="danger"
+       OnCancel="()=>_visibleDialog = false">
+    <p>@_modalText</p>
+</Modal>
+
+
+
