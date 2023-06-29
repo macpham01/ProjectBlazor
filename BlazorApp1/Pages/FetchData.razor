@@ -53,6 +53,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        listStudent = await studentService.GetStudentsByPageAsyn(1, 10);
+        listStudent = await studentService.GetStudentsByPageAsyn(1, 10, "",0, "", "", "");
     }
 }

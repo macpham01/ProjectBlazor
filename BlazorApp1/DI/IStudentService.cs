@@ -4,7 +4,9 @@ namespace BlazorApp1.DI
 {
     public interface IStudentService
     {
-        public Task<List<SinhVien>> GetStudentsByPageAsyn(int pageNumber, int pageSize);
+        public Task<List<SinhVien>> GetStudentsByPageAsyn(int pageNumber, int pageSize, string fullName,int gender, string mathScore, string literatureScore, string englishScore);
+
+        public List<SinhVien> GetAllStudent();
 
         public Task<bool> AddStudentAsyn(SinhVien sinhVien);
 
@@ -14,7 +16,7 @@ namespace BlazorApp1.DI
 
         public Task<SinhVien> DisplayAStudentAsyn(SinhVien sinhVien);
 
-        public int TotalRecord();
+        public int TotalRecord(string fullName,int gender, string mathScore, string literatureScore, string englishScore);
 
     }
 }

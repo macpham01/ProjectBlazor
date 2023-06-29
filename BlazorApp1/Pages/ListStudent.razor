@@ -3,15 +3,22 @@
 @using System.ComponentModel
 @using AntDesign.TableModels
 @using BlazorApp1.Models;
+@using System.ComponentModel.DataAnnotations;
+@using System.Text.Json;
 
 
+<div style="display: flex; justify-content: space-between">
 <Button Type="primary" OnClick="@(()=>AddStudent())">
     Thêm mới sinh viên
 </Button>
+    <Button OnClick="()=>SearchStudent()">Tìm kiếm sinh viên</Button>
+</div>
+
 
 <Modal style="width:50%; height: 80vh" Title="@_titleModel"
        Visible="@_visible"
-       >
+       Footer="null"
+       OnCancel="@HandleCancel">
      @*<Template style="height:90%; width:100%">
             <Row Gutter="16">
                 <AntDesign.Col Span="12">
@@ -51,13 +58,13 @@
         <br />
      </Template>*@
 
-    @using System.ComponentModel.DataAnnotations;
-    @using System.Text.Json;
+
 
     <Form Model="@student"
           @ref="form"
-          LabelColSpan="8"
-          WrapperColSpan="16">
+          OnFinish="OnFinish"
+          LabelColSpan="4"
+          >
         <FormItem Label="Họ và tên">
             <Input @bind-Value="student.FullName" />
         </FormItem>
@@ -77,8 +84,8 @@
         <FormItem Label="Điểm anh">
             <Input @bind-Value="@context.EnglishScore" />
         </FormItem>
-        <FormItem WrapperColOffset="8" WrapperColSpan="16">
-            <Button Type="@ButtonType.Primary" HtmlType="submit" OnClick="(e)=>HandleOk(e)">
+        <FormItem WrapperColOffset="16" WrapperColSpan="16">
+            <Button Type="@ButtonType.Primary" HtmlType="submit">
                 Submit
             </Button>
             <Button OnClick="(e)=>HandleCancel(e)">
@@ -101,7 +108,7 @@
        OnChange="OnChange"
        Size="TableSize.Small">
     <Selection Key="@(context.GuiID.ToString())" />
-    <PropertyColumn Property="c=>c.STT" Sortable />
+    <PropertyColumn Title="STT" Property="c=>c.SoThuTu" Sortable />
     <PropertyColumn Title="Họ và tên" Property="c=>c.FullName" Sortable />
     <PropertyColumn Title="Giới tính" Property="c=>GetGenderLabel(c.Gender)"  />
     <PropertyColumn Title="Điểm toán" Property="c=>c.MathScore" />

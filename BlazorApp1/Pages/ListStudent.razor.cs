@@ -22,7 +22,7 @@ namespace BlazorApp1.Pages
         IEnumerable<SinhVien> selectedRows;
         ITable table;
         int _pageIndex = 1;
-        int _pageSize = 3;
+        int _pageSize = 5;
         int _total = 0;
         bool _visible = false;
         string _titleModel = "";
@@ -41,10 +41,10 @@ namespace BlazorApp1.Pages
 
         private async Task LoadData()
         {
-            listStudent = await StudentService.GetStudentsByPageAsyn(_pageIndex, _pageSize);
-            int i = (_pageIndex - 1) * _pageSize + 1;
-            listStudent.ForEach(c => { c.STT = i; i++; });
-            _total = StudentService.TotalRecord();
+            listStudent = await StudentService.GetStudentsByPageAsyn(_pageIndex, _pageSize, student.FullName,student.Gender, student.MathScore, student.LiteratureScore, student.EnglishScore);
+            int index = (_pageIndex - 1) * _pageSize + 1;
+            listStudent.ForEach(c => { c.SoThuTu = index; index++; });
+            _total = StudentService.TotalRecord(student.FullName,student.Gender, student.MathScore, student.LiteratureScore, student.EnglishScore);
         }
 
         public async Task OnChange(QueryModel<SinhVien> queryModel)
@@ -125,7 +125,7 @@ namespace BlazorApp1.Pages
                 {
                     var result = await StudentService.UpdateStudentAsyn(student);
                     if (result)
-                        listStudent = await StudentService.GetStudentsByPageAsyn(_pageIndex, _pageSize);
+                        await LoadData();
                 }
             _visible = false;
             }
@@ -145,9 +145,41 @@ namespace BlazorApp1.Pages
             _visible = true; 
             _titleModel = "Thêm mới sinh viên";
             _statusModal = 0; //Modal create
+            student = new SinhVien();
             student.Gender = 0; //Mặc định giới tính là nam khi thêm mới
             student.GuiID = Guid.NewGuid();
+
         }
 
+        private async Task OnFinish(EditContext editContext)
+        {
+            if (_statusModal == 0)
+            {
+                var result = await StudentService.AddStudentAsyn(student);
+                if (result)
+                {
+                    student = new SinhVien();
+                    await LoadData();
+                }
+            }
+            else if (_statusModal == 1)
+            {
+                var result = await StudentService.UpdateStudentAsyn(student);
+            }
+            else
+            {
+                await LoadData();
+                _pageIndex = 1;
+             }
+            _visible = false;
+        }
+
+        private void SearchStudent()
+        {
+            _visible = true;
+            _titleModel = "Tìm kiếm sinh viên";
+            _statusModal = 2; //Modal search
+            student = new SinhVien();
+        }
     }
 }

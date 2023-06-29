@@ -51,14 +51,21 @@ namespace BlazorApp1.DI
             }
         }
 
-        public async Task<List<SinhVien>> GetStudentsByPageAsyn(int pageNumber, int pageSize)
+        public async Task<List<SinhVien>> GetStudentsByPageAsyn(int pageNumber, int pageSize, string fullName,int gender, string mathScore, string literatureScore, string englishScore)
         {
             using (var session = FluentNHibernateHelper.OpenSession())
             {
-                return await session.Query<SinhVien>()
-                   .Skip((pageNumber - 1) * pageSize)
-                   .Take(pageSize)
-                   .ToListAsync();
+                if (gender==9999) return await session.Query<SinhVien>()
+                       .Where(x=>x.FullName.Contains(fullName) && (x.Gender == 0 || x.Gender == 1 || x.Gender==2) && x.MathScore.Contains(mathScore)&&x.LiteratureScore.Contains(literatureScore)&&x.EnglishScore.Contains(englishScore))
+                       .Skip((pageNumber - 1) * pageSize)
+                       .Take(pageSize)
+                       .ToListAsync();
+                else
+                    return await session.Query<SinhVien>()
+                       .Where(x=>x.FullName.Contains(fullName)&&x.Gender==gender&&x.MathScore.Contains(mathScore)&&x.LiteratureScore.Contains(literatureScore)&&x.EnglishScore.Contains(englishScore))
+                       .Skip((pageNumber - 1) * pageSize)
+                       .Take(pageSize)
+                       .ToListAsync();
             }
         }
 
@@ -85,11 +92,11 @@ namespace BlazorApp1.DI
             }
         }
 
-        public async Task<SinhVien> DisplayAStudent(int id)
+        public async Task<SinhVien> DisplayAStudent(Guid id)
         {
             using (var session = FluentNHibernateHelper.OpenSession())
             {
-                return session.Query<SinhVien>().FirstOrDefault(x=>x.STT==id);
+                return session.Query<SinhVien>().FirstOrDefault(x=>x.GuiID==id);
             }
         }
 
@@ -98,11 +105,25 @@ namespace BlazorApp1.DI
             throw new NotImplementedException();
         }
 
-        public int TotalRecord()
+        public int TotalRecord(string fullName,int gender, string mathScore, string literatureScore, string englishScore)
         {
             using (var session = FluentNHibernateHelper.OpenSession())
             {
-                return session.Query<SinhVien>().ToList().Count;
+                if (gender == 9999) return session.Query<SinhVien>()
+                        .Where(x => x.FullName.Contains(fullName) && (x.Gender == 0 || x.Gender == 1 || x.Gender == 2) && x.MathScore.Contains(mathScore) && x.LiteratureScore.Contains(literatureScore) && x.EnglishScore.Contains(englishScore))
+                        .ToList().Count;
+                else
+                    return session.Query<SinhVien>()
+                        .Where(x => x.FullName.Contains(fullName)&& x.Gender==gender && x.MathScore.Contains(mathScore) && x.LiteratureScore.Contains(literatureScore) && x.EnglishScore.Contains(englishScore))
+                        .ToList().Count;
+            }
+        }
+
+        public List<SinhVien> GetAllStudent()
+        {
+            using (var session = FluentNHibernateHelper.OpenSession())
+            {
+                return session.Query<SinhVien>().ToList();
             }
         }
     }

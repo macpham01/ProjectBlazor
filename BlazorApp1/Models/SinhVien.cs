@@ -60,5 +60,14 @@ namespace BlazorApp1.Models
         {
             return double.TryParse(text, out double number);
         }
+
+        public SinhVien()
+        {
+            Gender = 9999;
+            FullName = "";
+            MathScore = "";
+            LiteratureScore = "";
+            EnglishScore = "";
+        }
     }
 }
